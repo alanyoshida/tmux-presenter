@@ -1,0 +1,2 @@
+ping -c10 google.com
+echo "Test after ping"

@@ -1,0 +1,16 @@
+vim
+Enter
+i
+Teste
+Escape
+C-w
+v
+Escape
+dd
+i
+Janela2
+Escape
+:q!
+Enter
+:q!
+Enter

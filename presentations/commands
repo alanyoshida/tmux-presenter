@@ -1,0 +1,5 @@
+echo "Teste"
+# This will list files in current directory
+ls -lha
+# This shows the current directory
+pwd

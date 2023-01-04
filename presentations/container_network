@@ -1,0 +1,44 @@
+# mkdir container_networking
+# cd container_networking
+# vagrant init ubuntu/focal64
+# vagrant up
+# vagrant ssh
+sudo su
+apt install net-tools
+ip netns add sleep
+ip netns add webapp
+ip netns exec sleep ip link
+ip netns exec webapp ip link
+arp
+ip netns exec sleep arp
+ip netns exec webapp arp
+route
+ip netns exec sleep route
+ip netns exec webapp route
+ip link add app-net-0 type bridge
+ip link
+ip link set dev app-net-0 up
+ip link add veth-sleep type veth peer name veth-sleep-br
+ip link add veth-webapp type veth peer name veth-webapp-br
+ip link set veth-sleep netns sleep
+ip link set veth-webapp netns webapp
+ip link set veth-sleep-br master app-net-0
+ip link set veth-webapp-br master app-net-0
+# Add ip to virtual interface veth-sleep
+ip -n sleep addr add 192.168.52.1/24 dev veth-sleep
+ip -n sleep link set veth-sleep up
+# Add ip to virtual interface veth-webapp
+ip -n webapp addr add 192.168.52.2/24 dev veth-webapp
+ip -n webapp link set veth-webapp up
+ip addr add 192.168.52.5/24 dev app-net-0
+ip link set dev veth-sleep-br up
+ip link set dev veth-webapp-br up
+ping -c3 192.168.52.1
+ip netns exec webapp ping 142.251.129.142
+ip netns exec webapp route
+iptables -t nat -A POSTROUTING -s 192.168.52.0/24 -j MASQUERADE
+ip netns exec webapp ping 142.251.129.142
+ip netns exec webapp route
+ip netns exec webapp ip route add default via 192.168.52.5
+sysctl -w net.ipv4.ip_forward=1
+ip netns exec webapp ping 23.185.0.4

@@ -1,0 +1,5 @@
+kind create cluster
+kubectl config current-context
+kubectl get no
+kubectl get po -A
+kind delete cluster

@@ -1,0 +1,4 @@
+docker run -it ubuntu:22.04 /bin/bash
+apt update
+apt upgrade
+exit

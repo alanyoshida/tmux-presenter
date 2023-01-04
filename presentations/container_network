@@ -1,9 +1,10 @@
 # mkdir container_networking
 # cd container_networking
 # vagrant init ubuntu/focal64
-# vagrant up
-# vagrant ssh
+#vagrant up
+vagrant ssh
 sudo su
+# Installing network Tools
 apt install net-tools
 ip netns add sleep
 ip netns add webapp
@@ -15,13 +16,17 @@ ip netns exec webapp arp
 route
 ip netns exec sleep route
 ip netns exec webapp route
+# Creating the Bridge
 ip link add app-net-0 type bridge
 ip link
 ip link set dev app-net-0 up
+# Specifies the virtual pair device name of the _VETH/VXCAN_ tunnel.
 ip link add veth-sleep type veth peer name veth-sleep-br
 ip link add veth-webapp type veth peer name veth-webapp-br
+# Set virtual interface to network namespace
 ip link set veth-sleep netns sleep
 ip link set veth-webapp netns webapp
+# Set master device of the device
 ip link set veth-sleep-br master app-net-0
 ip link set veth-webapp-br master app-net-0
 # Add ip to virtual interface veth-sleep
@@ -38,7 +43,11 @@ ip netns exec webapp ping 142.251.129.142
 ip netns exec webapp route
 iptables -t nat -A POSTROUTING -s 192.168.52.0/24 -j MASQUERADE
 ip netns exec webapp ping 142.251.129.142
+# Show route for webapp ns
 ip netns exec webapp route
+# Add default route as the bridge
 ip netns exec webapp ip route add default via 192.168.52.5
+# Enable forwarding
 sysctl -w net.ipv4.ip_forward=1
+# Test
 ip netns exec webapp ping 23.185.0.4

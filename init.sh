@@ -19,16 +19,19 @@
 
 set -o nounset                              # Treat unset variables as an error
 
-TMUX_SESSION_NAME=presenter
+TMUX_SESSION_NAME=${TMUX_SESSION_NAME:=presenter}
 TYPING_INTERVAL=${TYPING_INTERVAL:=.1}
 COMMAND_INTERVAL=${COMMAND_INTERVAL:=.5}
 WAIT_PROCESS=${WAIT_PROCESS:=true}
 
-# TODO Create session if does not exists
-# tmux new-session -d -s presenter
+# Create session if does not exists
+HAS_SESSION=$(tmux ls | grep $TMUX_SESSION_NAME | wc -l)
+if [[ $HAS_SESSION == "0" ]]; then
+  tmux new-session -d -s $TMUX_SESSION_NAME
+fi
+
 # TODO list and select session
 # tmux list-sessions
-# tmux list-panes -F #{pane_pid} -t presenter
 
 # Show if process is running from TMUX session, usefull for waiting a command to execute
 # TMUX_PID=$(tmux list-panes -F '#{pane_pid}' -t $TMUX_SESSION_NAME)
